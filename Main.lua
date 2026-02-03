@@ -1,29 +1,5 @@
---[[ 
-    ============================================================
-    VEXEL HUB | ULTIMATE EXTENDED v10.9 (RADAR ICON FIX & TRACERS)
-    ============================================================
-    Geliştirici: Gemini AI
-    
-    [GÜNCELLEMELER v10.9]
-    + RADAR OKU İKONU DÜZELTİLDİ:
-      - "Kağıt gibi" görünen bozuk ikon, net ve pürüzsüz standart beyaz bir ok ile değiştirildi.
-      - Dönüş hassasiyeti ayarlandı.
-      
-    + YENİ ÖZELLİK: TRACERS (ÇİZGİ ESP):
-      - "Görsel" sekmesine eklendi.
-      - Ekranın altından oyunculara giden çizgiler çizer.
-      - Drawing API kullanır (Yüksek performans).
-      - Takım rengine (Dost/Düşman) göre renk değiştirir.
-
-    [ÖNCEKİ ÖZELLİKLER]
-    + ESP FIX (YENİ DOĞANLAR), AIMBOT, TRIGGER BOT...
-    ============================================================
-]]
-
--- // EXECUTOR KONTROLÜ (Drawing API için) // --
 local DrawingApiSupported = (Drawing and typeof(Drawing) == "table" and Drawing.new)
 
--- // SERVİSLER // --
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -42,16 +18,16 @@ local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local Camera = workspace.CurrentCamera
 
--- // BAĞLANTI LİSTESİ // --
+
 local Connections = {}
 local Waypoints = {} 
 
--- // PERFORMANCE CACHE // --
+
 local NPC_Cache = {} 
 local UI_Storage = {}
-local TracerCache = {} -- Tracers için cache
+local TracerCache = {} 
 
--- // DOSYA SİSTEMİ HAZIRLIK // --
+
 local ConfigFolder = "VexelHub_Configs"
 local function InitFileSystem()
     if not isfolder(ConfigFolder) then
@@ -60,26 +36,26 @@ local function InitFileSystem()
 end
 pcall(InitFileSystem)
 
--- // TEMİZLİK // --
+
 local CleanList = {"VexelHubUI", "VexelIntro", "VexelTracers", "VexelDevESP", "VexelFOV", "VexelArrowUI", "VexelRadar"}
 for _, name in pairs(CleanList) do
     if CoreGui:FindFirstChild(name) then CoreGui[name]:Destroy() end
 end
 
--- Tracers temizliği (Drawing objeleri için)
+
 if DrawingApiSupported then
     for i,v in pairs(workspace:GetDescendants()) do
         if v.Name == "VexelTracer" then v:Remove() end
     end
 end
 
--- // AYARLAR (CONFIG) // --
+
 local Config = {
-    -- UI
+
     UIToggleKey = Enum.KeyCode.F1,
     AnonymousMode = false,
 
-    -- Aimbot
+  
     AimbotOn = false,
     AimbotToggleKey = Enum.KeyCode.RightShift, 
     AimPart = "Head", 
@@ -93,18 +69,18 @@ local Config = {
     StickyAim = true,
     Prediction = 0,
     
-    -- Trigger Bot
+  
     TriggerBot = false,
     TriggerKey = Enum.KeyCode.E,
     TriggerHoldMode = true,
 
-    -- Karakter
+    
     Speed = 16, SpeedOn = false, NoSlow = false,
     CFrameSpeed = 1, CFrameWalk = false,
     Jump = 50, JumpOn = false, AutoJump = false,
     InfJump = false,
     
-    -- Fizik
+
     Fly = false, FlySpeed = 50, FlyKey = Enum.KeyCode.F,
     GravityOn = false, GravityVal = 196.2,
     NoclipPlayer = false,
@@ -114,23 +90,23 @@ local Config = {
     AirWalk = false,
     AntiVoid = false,
     
-    -- Araçlar
+  
     VehicleFly = false, VehFlySpeed = 100,
     AutoClicker = false, ClickKey = Enum.KeyCode.RightAlt, CPS = 10,
     AutoUse = false, InstantPrompt = false, 
     InstantKey = Enum.KeyCode.Q, InstantKeyOn = false,
     ToolBring = false,
     
-    -- Görsel (ESP BASİT AYARLAR)
+   
     ESP_Highlight = false,
     ESP_NameTag = false,
     ESP_Health = false,
-    ESP_Tracers = false, -- Yeni Özellik
+    ESP_Tracers = false,
     ESP_MaxDist = 1000,
     
-    ESP_NamePos = "Top",    -- Top, Bottom, Left, Right
+    ESP_NamePos = "Top",    
     ESP_NameSize = 14,
-    ESP_BarPos = "Left",    -- Top, Bottom, Left, Right
+    ESP_BarPos = "Left",    
     ESP_BarSize = 5,       
     
     NoFog = false, TimeChange = false, Time = 14,
@@ -140,7 +116,7 @@ local Config = {
     HUD_Active = false, HUD_Pos = 1,
     RadarActive = false,
     
-    -- Diğer
+  
     ClickTP = false, KeyTP = false,
     ClickDelete = false,
     ChatSpam = false, SpamMsg = "Vexel Hub v10.9!",
@@ -149,14 +125,14 @@ local Config = {
     AutoRejoin = false, 
     Spectating = false,
     
-    -- Oyuncu
+    
     LoopFollow = false, FollowDist = 4,
     MonitorActive = false,
     
-    -- Koruma
+    
     AntiRagdoll = false,
 
-    -- Developer
+    
     DevInspector = false,
     ViewDeletable = false,
     ShowCoords = false,
@@ -164,7 +140,7 @@ local Config = {
     CombatSpy = false,
 }
 
--- // FOV DAİRESİ // --
+
 local FOVGui = Instance.new("ScreenGui")
 FOVGui.Name = "VexelFOV"
 FOVGui.Parent = CoreGui
@@ -185,7 +161,7 @@ local FOVCorner = Instance.new("UICorner")
 FOVCorner.Parent = FOVCircle
 FOVCorner.CornerRadius = UDim.new(1, 0)
 
--- // RADAR PANELİ // --
+
 local RadarGui = Instance.new("ScreenGui")
 RadarGui.Name = "VexelRadar"
 RadarGui.Parent = CoreGui
@@ -203,7 +179,7 @@ RadarFrame.Visible = false
 local RCorner = Instance.new("UICorner"); RCorner.CornerRadius = UDim.new(0, 12); RCorner.Parent = RadarFrame
 local RStroke = Instance.new("UIStroke"); RStroke.Parent = RadarFrame; RStroke.Color = Color3.fromRGB(115, 0, 255); RStroke.Thickness = 2
 
--- Radar Sürükleme
+
 local rmd, rmdi, rmds, rmsp
 RadarFrame.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -243,7 +219,7 @@ RadarHP.TextColor3 = Color3.fromRGB(100, 255, 100)
 RadarHP.Font = Enum.Font.Code
 RadarHP.TextSize = 13
 
--- // INTRO ANIMASYONU // --
+
 local function PlayIntro()
     local IntroGui = Instance.new("ScreenGui")
     IntroGui.Name = "VexelIntro"
@@ -306,7 +282,7 @@ end
 
 PlayIntro()
 
--- // UI OLUŞTURMA // --
+
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "VexelHubUI"
 ScreenGui.Parent = CoreGui
@@ -314,7 +290,7 @@ ScreenGui.IgnoreGuiInset = true
 ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 999
 
--- Dev Inspector GUI
+
 local DevGUI = Instance.new("ScreenGui")
 DevGUI.Name = "VexelDevESP"
 DevGUI.Parent = CoreGui
@@ -336,7 +312,6 @@ local DevPad = Instance.new("UIPadding", DevLabel)
 DevPad.PaddingLeft = UDim.new(0, 5)
 DevPad.PaddingTop = UDim.new(0, 5)
 
--- STATS HUD
 local StatsHUD = Instance.new("Frame")
 StatsHUD.Name = "StatsHUD"
 StatsHUD.Parent = ScreenGui
@@ -369,7 +344,7 @@ PingLabel.Font = Enum.Font.Gotham
 PingLabel.TextSize = 14
 PingLabel.TextXAlignment = Enum.TextXAlignment.Left
 
--- PLAYER MONITOR
+
 local MonFrame = Instance.new("Frame")
 MonFrame.Name = "PlayerMonitor"
 MonFrame.Parent = ScreenGui
@@ -380,7 +355,7 @@ MonFrame.Visible = false
 local MonCorner = Instance.new("UICorner"); MonCorner.CornerRadius = UDim.new(0, 10); MonCorner.Parent = MonFrame
 local MonStroke = Instance.new("UIStroke"); MonStroke.Parent = MonFrame; MonStroke.Color = Color3.fromRGB(115, 0, 255); MonStroke.Thickness = 3
 
--- Monitor Sürükleme
+
 local md, mdi, mds, msp
 MonFrame.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -461,14 +436,13 @@ local function Notify(title, text)
     end)
 end
 
--- PANIC BUTTON
+
 local function FullShutdown()
     ScreenGui:Destroy()
     DevGUI:Destroy()
     FOVGui:Destroy()
     RadarGui:Destroy()
     
-    -- Tracers temizle
     if DrawingApiSupported then
         for _, line in pairs(TracerCache) do
             if line and line.Remove then line:Remove() end
@@ -536,19 +510,19 @@ local function FullShutdown()
     print("Vexel Hub Tamamen Kapatıldı.")
 end
 
--- [MENÜ AÇ/KAPAT TUŞU]
+
 table.insert(Connections, UserInputService.InputBegan:Connect(function(input)
     if input.KeyCode == Config.UIToggleKey then
         ScreenGui.Enabled = not ScreenGui.Enabled
     end
-    -- [AIMBOT TOGGLE KEY]
+  
     if input.KeyCode == Config.AimbotToggleKey then
         Config.AimbotOn = not Config.AimbotOn
         if Config.AimbotOn then Notify("Aimbot", "AKTİF") else Notify("Aimbot", "PASİF") end
     end
 end))
 
--- ANA PENCERE
+
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
@@ -562,7 +536,7 @@ MainFrame.Visible = true
 local UICorner = Instance.new("UICorner"); UICorner.CornerRadius = UDim.new(0, 12); UICorner.Parent = MainFrame
 local UIStroke = Instance.new("UIStroke"); UIStroke.Parent = MainFrame; UIStroke.Color = Color3.fromRGB(115, 0, 255); UIStroke.Thickness = 4
 
--- AÇMA BUTONU
+
 local OpenBtn = Instance.new("TextButton")
 OpenBtn.Name = "OpenBtn"
 OpenBtn.Parent = ScreenGui
@@ -583,7 +557,7 @@ OpenBtn.MouseButton1Click:Connect(function()
     OpenBtn.Visible = false
 end)
 
--- ÜST BAŞLIK & PROFİL
+
 local TitleBar = Instance.new("Frame")
 TitleBar.Parent = MainFrame
 TitleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
@@ -654,7 +628,7 @@ local PCorner = Instance.new("UICorner"); PCorner.CornerRadius = UDim.new(0,6); 
 
 PanicBtn.MouseButton1Click:Connect(FullShutdown)
 
--- [UI DRAG FIX]
+
 local dragging, dragInput, dragStart, startPos
 TitleBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -995,9 +969,7 @@ local function CreateDropdown(parent, text, options, callback)
     end})
 end
 
--- =====================================
--- AIMBOT SEKMESİ
--- =====================================
+
 CreateSection(Page_Aimbot, "Genel Ayarlar")
 CreateToggle(Page_Aimbot, "Aimbot Aktif", function(v) Config.AimbotOn = v end)
 CreateKeybind(Page_Aimbot, "Kilitlenme Tuşu", Config.AimKey, function(k) Config.AimKey = k end)
@@ -1021,9 +993,7 @@ CreateSlider(Page_Aimbot, "Prediction (Tahmin)", 0, 10, 0, function(v) Config.Pr
 CreateSlider(Page_Aimbot, "FOV Boyutu", 50, 800, 150, function(v) Config.AimFOV = v; FOVCircle.Size = UDim2.new(0, v*2, 0, v*2); FOVCircle.Position = UDim2.new(0.5, -v, 0.5, -v) end)
 CreateToggle(Page_Aimbot, "FOV Dairesini Göster", function(v) Config.ShowFOV = v; FOVCircle.Visible = v end)
 
--- =====================================
--- DİĞER SEKMELER
--- =====================================
+
 
 CreateSection(Page_Main, "Hareket")
 CreateToggle(Page_Main, "Speed (Standart)", function(v) Config.SpeedOn = v; if not v and LocalPlayer.Character then LocalPlayer.Character.Humanoid.WalkSpeed = 16 end end)
@@ -1203,7 +1173,7 @@ end)
 -- [YENİ ÖZELLİK: TRACERS (ÇİZGİ ESP)]
 CreateToggle(Page_Visual, "Tracers (Çizgi)", function(v) Config.ESP_Tracers = v end)
 
--- [BASİTLEŞTİRİLMİŞ ESP AYARLARI]
+
 CreateDropdown(Page_Visual, "İsim Konumu", {"Top", "Bottom", "Right", "Left"}, function(v) Config.ESP_NamePos = v end)
 CreateSlider(Page_Visual, "İsim Boyutu", 10, 30, 14, function(v) Config.ESP_NameSize = v end)
 
@@ -1366,7 +1336,7 @@ CreateButton(Page_Developer, "Print Children (Konsola Yaz)", function()
     end
 end)
 
--- [YENİ EKLENEN KISIM: COMBAT SPY]
+
 CreateSection(Page_Developer, "Combat Spy (Hasar Log)")
 
 local LogScroll = Instance.new("ScrollingFrame")
@@ -1405,9 +1375,9 @@ CreateButton(Page_Developer, "Logları Temizle", function()
 end)
 
 local LastHealth = 100
-local NPC_Healths = {} -- NPC canlarını takip etmek için
+local NPC_Healths = {} 
 
--- Kendi Hasarını Dinle ve Yakın Düşmanı Bul
+
 table.insert(Connections, task.spawn(function()
     while true do
         task.wait(0.1)
@@ -1443,26 +1413,26 @@ table.insert(Connections, task.spawn(function()
     end
 end))
 
--- NPC Hasarını Dinle (Bizim vurduklarımız)
+
 table.insert(Connections, task.spawn(function()
     while true do
-        task.wait(0.1) -- Hızlı tarama
+        task.wait(0.1)
         if Config.CombatSpy then
-            -- NPC Cache'den faydalanıyoruz
+            
             for _, npc in pairs(NPC_Cache) do
                 if npc and npc:FindFirstChild("Humanoid") and npc:FindFirstChild("Head") then
                     local currentHP = npc.Humanoid.Health
                     
-                    -- Eğer NPC tabloda yoksa ekle
+                    
                     if not NPC_Healths[npc] then NPC_Healths[npc] = currentHP end
                     
-                    -- Can değişikliği kontrolü
+                   
                     if currentHP < NPC_Healths[npc] then
                         local diff = NPC_Healths[npc] - currentHP
-                        -- Sadece bize yakınsa (biz vurmuşuzdur mantığı) logla
+                        
                         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                             local dist = (npc.Head.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-                            if dist < 20 then -- Bize çok yakınsa biz vurmuşuzdur
+                            if dist < 20 then
                                 LogSpy("⚔️ HASAR VERİLDİ: " .. npc.Name .. " [-" .. math.floor(diff) .. "] (Kalan: "..math.floor(currentHP)..")", Color3.fromRGB(255, 200, 50))
                             end
                         end
@@ -1473,7 +1443,7 @@ table.insert(Connections, task.spawn(function()
         end
     end
 end))
--- [YENİ KISIM SONU]
+
 
 CreateSection(Page_Misc, "Faydalı Araçlar")
 CreateButton(Page_Misc, "Rejoin Server (Tekrar Bağlan)", function() TeleportService:Teleport(game.PlaceId, LocalPlayer) end)
@@ -1859,7 +1829,7 @@ table.insert(Connections, task.spawn(function()
     end
 end))
 
--- [FPS OPTIMIZASYONU: Cache Loop]
+
 table.insert(Connections, task.spawn(function()
     while true do
         if Config.NPC_ESP or Config.CombatSpy then
@@ -1874,13 +1844,11 @@ table.insert(Connections, task.spawn(function()
     end
 end))
 
--- =============================================
--- AIMBOT MANTIĞI & TRIGGER BOT
--- =============================================
+
 local LockedTarget = nil
 local TriggerToggled = false
 
--- TRIGGER TOGGLE LOGIC
+
 table.insert(Connections, UserInputService.InputBegan:Connect(function(input)
     if not Config.TriggerHoldMode and input.KeyCode == Config.TriggerKey then
         TriggerToggled = not TriggerToggled
@@ -1943,11 +1911,10 @@ local function GetClosestPlayer()
     return closestPlayer
 end
 
--- [ESP FIX: HIGHLIGHT WATCHDOG]
--- Bu sistem surekli oyuncu uzerinde highlight var mi diye kontrol eder ve yoksa ekler.
+
 table.insert(Connections, task.spawn(function()
     while true do
-        task.wait(0.5) -- Her 0.5 saniyede bir kontrol et
+        task.wait(0.5)
         if Config.ESP_Highlight then
             for _, p in pairs(Players:GetPlayers()) do
                 if p ~= LocalPlayer and p.Character then
@@ -1964,18 +1931,18 @@ table.insert(Connections, task.spawn(function()
     end
 end))
 
--- [ESP FIX: NAME & HEALTH (ANCESTRY CHECK)]
+
 local function ConnectPlayer(p)
     local function CharacterAdded(char)
-        -- Karakterin workspace'e tam girmesini bekle
+        
         if not char.Parent then char.AncestryChanged:Wait() end
         
-        -- WaitForChild (Timeout 10sn)
+       
         local head = char:WaitForChild("Head", 10)
         local hum = char:WaitForChild("Humanoid", 10)
         if not head or not hum then return end
 
-        -- Nametag & Modern Healthbar
+      
         if Config.ESP_NameTag or Config.ESP_Health then
             if head:FindFirstChild("VexelNameTag") then head.VexelNameTag:Destroy() end
             
@@ -1984,7 +1951,7 @@ local function ConnectPlayer(p)
             bg.Size = UDim2.new(0, 200, 0, 60)
             bg.AlwaysOnTop = true
             
-            -- Isim
+      
             local nameLbl = Instance.new("TextLabel", bg)
             nameLbl.Name = "NameLabel"
             nameLbl.Size = UDim2.new(1, 0, 0.6, 0)
@@ -1997,7 +1964,7 @@ local function ConnectPlayer(p)
             nameLbl.TextSize = Config.ESP_NameSize
             nameLbl.Visible = Config.ESP_NameTag
             
-            -- Modern Health Bar (Container)
+          
             local barBg = Instance.new("Frame", bg)
             barBg.Name = "HealthBar"
             barBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -2014,12 +1981,11 @@ local function ConnectPlayer(p)
             fill.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
             fill.BorderSizePixel = 0
             
-            -- Can Değişim Loop'u (Event yerine Loop daha stabil)
+        
             task.spawn(function()
                 while char and hum and hum.Health > 0 and bg.Parent do
-                    -- [BASİTLEŞTİRİLMİŞ ESP KONUMLANDIRMA]
-                    
-                    -- İsim Konumu
+                
+                 
                     if Config.ESP_NamePos == "Top" then 
                         nameLbl.Position = UDim2.new(0,0,0,-20)
                         bg.StudsOffset = Vector3.new(0, 4, 0)
@@ -2035,7 +2001,7 @@ local function ConnectPlayer(p)
                     end
                     nameLbl.TextSize = Config.ESP_NameSize
                     
-                    -- Bar Konumu & Boyutu
+                  
                     local barW = Config.ESP_BarSize * 10 
                     local barH = Config.ESP_BarSize
                     barBg.Size = UDim2.new(0, barW, 0, barH)
@@ -2071,7 +2037,7 @@ end
 for _, p in pairs(Players:GetPlayers()) do if p ~= LocalPlayer then ConnectPlayer(p) end end
 Players.PlayerAdded:Connect(ConnectPlayer)
 
--- [YENİ: TRACER (Çizgi) FONKSİYONU]
+
 local function UpdateTracer(plr)
     if not DrawingApiSupported then return end
     if not TracerCache[plr] then
@@ -2116,15 +2082,15 @@ local function UpdateTracer(plr)
     end
 end
 
--- Tracer Temizliği
+
 Players.PlayerRemoving:Connect(function(p)
     if TracerCache[p] then TracerCache[p]:Remove() TracerCache[p] = nil end
 end)
 
--- MAIN LOOP (RENDERSTEPPED)
+
 table.insert(Connections, RunService.RenderStepped:Connect(function(deltaTime)
     
-    -- [TRIGGER BOT LOOP]
+   
     if Config.TriggerBot then
         local shouldShoot = false
         if Config.TriggerHoldMode then
@@ -2150,7 +2116,7 @@ table.insert(Connections, RunService.RenderStepped:Connect(function(deltaTime)
         end
     end
 
-    -- [PROXIMITY RADAR LOGIC (NEW)]
+
     if Config.RadarActive then
         local closest = nil
         local dist = 99999
@@ -2183,14 +2149,14 @@ table.insert(Connections, RunService.RenderStepped:Connect(function(deltaTime)
         RadarFrame.Visible = false
     end
 
-    -- [TRACER UPDATE LOOP]
+  
     if DrawingApiSupported then
         for _, p in pairs(Players:GetPlayers()) do
             if p ~= LocalPlayer then UpdateTracer(p) end
         end
     end
 
-    -- [CFRAME WALK FIX]
+   
     if Config.CFrameWalk and LocalPlayer.Character then
         local hum = LocalPlayer.Character:FindFirstChild("Humanoid")
         local root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
@@ -2200,11 +2166,11 @@ table.insert(Connections, RunService.RenderStepped:Connect(function(deltaTime)
         end
     end
 
-    -- [AIMBOT LOOP]
+   
     if Config.AimbotOn then
         local isAiming = false
         
-        -- [AIMBOT MODE: HOLD VS ALWAYS ON]
+      
         if Config.AimHoldMode then
             if typeof(Config.AimKey) == "EnumItem" then
                 if Config.AimKey.EnumType == Enum.UserInputType then
@@ -2214,7 +2180,7 @@ table.insert(Connections, RunService.RenderStepped:Connect(function(deltaTime)
                 end
             end
         else
-            -- Always On Mode
+          
             isAiming = true
         end
         
@@ -2245,7 +2211,7 @@ table.insert(Connections, RunService.RenderStepped:Connect(function(deltaTime)
         end
     end
 
-    -- [FIX: OYUNCU İZLEME VE TAKİP DÜZELTMESİ] --
+  
     if SelectedPlr and SelectedPlr.Character and SelectedPlr.Character:FindFirstChild("Humanoid") and SelectedPlr.Character:FindFirstChild("HumanoidRootPart") then
         if Config.Spectating then
             Camera.CameraSubject = SelectedPlr.Character.Humanoid
@@ -2351,7 +2317,7 @@ table.insert(Connections, RunService.RenderStepped:Connect(function(deltaTime)
             if Config.AirWalk then local plat = workspace:FindFirstChild("AirPlat") or Instance.new("Part", workspace); plat.Name="AirPlat"; plat.Anchored=true; plat.CanCollide=true; plat.Transparency=1; plat.Size=Vector3.new(5,1,5); plat.Position = root.Position - Vector3.new(0,3.5,0) else if workspace:FindFirstChild("AirPlat") then workspace.AirPlat:Destroy() end end
             if Config.Jesus then local ray = Ray.new(root.Position, Vector3.new(0, -5, 0)); local hit, pos = workspace:FindPartOnRay(ray, char); if hit and hit.Name == "Water" or (hum:GetState() == Enum.HumanoidStateType.Swimming) then local plat = workspace:FindFirstChild("JesusPlat") or Instance.new("Part", workspace); plat.Name="JesusPlat"; plat.Anchored=true; plat.CanCollide=true; plat.Transparency=1; plat.Size=Vector3.new(5,1,5); plat.Position = root.Position - Vector3.new(0,3.5,0) else if workspace:FindFirstChild("JesusPlat") then workspace.JesusPlat:Destroy() end end end
             
-            -- [FLY REWORK - INFINITE YIELD STYLE]
+         
             if Config.Fly then
                 local bv = root:FindFirstChild("VexelFlyBV") or Instance.new("BodyVelocity", root)
                 bv.Name = "VexelFlyBV"
@@ -2462,4 +2428,5 @@ table.insert(Connections, Mouse.Button1Down:Connect(function() if Config.ClickTP
 table.insert(Connections, UserInputService.InputBegan:Connect(function(input, gpe) if gpe then return end if Config.KeyTP and LocalPlayer.Character then local r=LocalPlayer.Character.HumanoidRootPart; if input.KeyCode==Enum.KeyCode.V then r.CFrame=r.CFrame*CFrame.new(0,0,-10) end if input.KeyCode==Enum.KeyCode.B then r.CFrame=r.CFrame*CFrame.new(0,0,10) end end end))
 
 RefreshPlrs()
+
 RefreshTools()
