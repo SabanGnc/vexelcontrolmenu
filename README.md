@@ -50,7 +50,7 @@
 
 | Ana Menü | ESP & Monitor |
 | :---: | :---: |
-| ![Menu Preview](https://via.placeholder.com/400x200?text=Vexel+Menu+Preview) | ![ESP Preview](https://via.placeholder.com/400x200?text=ESP+and+Monitor) |
+| ![Menu Preview]([https://via.placeholder.com/400x200?text=Vexel+Menu+Preview](https://imgur.com/a/sPoLHLR)) | ![ESP Preview]([https://via.placeholder.com/400x200?text=ESP+and+Monitor](https://imgur.com/a/YHo1Dob)) |
 
 ---
 
@@ -76,4 +76,5 @@ Script içerisindeki varsayılan tuş atamaları aşağıdadır:
 3. Executor'a yapıştırın ve **Execute** butonuna basın.
 
 ```lua
-loadstring(game:HttpGet("GITHUB_RAW_LINKINIZI_BURAYA_YAPISTIRIN"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/SabanGnc/vexelcontrolmenu/refs/heads/main/control.lua"))()
+
