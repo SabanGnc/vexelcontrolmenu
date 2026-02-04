@@ -50,7 +50,7 @@
 
 | Ana Menü | ESP & Monitor |
 | :---: | :---: |
-| ![Menu Preview]([https://via.placeholder.com/400x200?text=Vexel+Menu+Preview](https://imgur.com/a/sPoLHLR)) | ![ESP Preview]([https://via.placeholder.com/400x200?text=ESP+and+Monitor](https://imgur.com/a/YHo1Dob)) |
+| ![Menu Preview]([https://imgur.com/a/sPoLHLR)) | ![ESP Preview]([https://imgur.com/a/YHo1Dob)) |
 
 ---
 
