@@ -50,7 +50,7 @@
 
 | Ana Menü | ESP & Monitor |
 | :---: | :---: |
-| ![Menu Preview]([https://imgur.com/a/sPoLHLR)) | ![ESP Preview]([https://imgur.com/a/YHo1Dob)) |
+| ![Menu Preview](https://i.imgur.com/sPoLHLR.png) | ![ESP Preview](https://i.imgur.com/YHo1Dob.png) |
 
 ---
 
